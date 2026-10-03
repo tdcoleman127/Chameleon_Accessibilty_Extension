@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="refresh" content="120" />
+<title>Broken Demo Checkout</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; color: #333; }
+  header { display: flex; justify-content: space-between; align-items: center; }
+  h3.section-title { color: #777; } /* heading level skipped on purpose: h1 -> h3 */
+  .product-row { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; }
+  .qty-btn {
+    width: 16px; height: 16px; font-size: 10px; border: 1px solid #ccc; background: #fafafa; cursor: pointer; outline: none;
+  }
+  .remove-btn { width: 18px; height: 18px; border: none; background: transparent; cursor: pointer; outline: none; }
+  input, select, button { font-size: 14px; }
+  input:focus, button:focus, select:focus { outline: none; } /* no visible focus style, on purpose */
+  .field { margin-bottom: 10px; }
+  .cta-checkout {
+    background: #e8e8e8;
+    color: #b7b7b7; /* ~1.6:1 contrast against this background, intentionally broken */
+    border: none;
+    padding: 6px 10px;
+    font-size: 13px;
+    width: 70px;
+    height: 20px;
+    cursor: pointer;
+  }
+  .long-paragraph {
+    width: 100%;
+  }
+  .status-dot {
+    display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: red; vertical-align: middle;
+  }
+  .status-dot.ok { background: green; }
+  .price-table { border-collapse: collapse; }
+  .price-table td, .price-table th { border: 1px solid #ddd; padding: 4px 8px; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Shop Demo</h1>
+    <nav>
+      <a href="#" tabindex="5">Account</a>
+    </nav>
+  </header>
+
+  <h3 class="section-title">Your cart</h3>
+
+  <div class="product-row">
+    <img src="https://placehold.co/60x60" />
+    <div>
+      <div>Wireless Mouse</div>
+      <div id="qty">
+        <button class="qty-btn" aria-hidden="false">-</button>
+        <span>1</span>
+        <button class="qty-btn">+</button>
+      </div>
+    </div>
+    <button class="remove-btn"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M1 1 L11 11 M11 1 L1 11" stroke="#999" stroke-width="2"/></svg></button>
+  </div>
+
+  <div class="product-row">
+    <img src="https://placehold.co/60x60" />
+    <div>
+      <div>USB-C Cable</div>
+      <div id="qty">
+        <button class="qty-btn">-</button>
+        <span>2</span>
+        <button class="qty-btn">+</button>
+      </div>
+    </div>
+    <button class="remove-btn"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M1 1 L11 11 M11 1 L1 11" stroke="#999" stroke-width="2"/></svg></button>
+  </div>
+
+  <table class="price-table">
+    <tr><th>Item</th><th>Price</th></tr>
+    <tr><td>Subtotal</td><td>$42.00</td></tr>
+    <tr><td>Shipping</td><td>$5.00</td></tr>
+  </table>
+
+  <p>
+    <span class="status-dot"></span>
+    <span class="status-dot ok"></span>
+  </p>
+
+  <h3 class="section-title">Checkout</h3>
+
+  <form>
+    <!-- No <label>, aria-label, or title on any of these — placeholder text alone is not an
+         accessible name, so a screen reader announces "edit text, blank" for each. -->
+    <div class="field">
+      <input type="text" />
+    </div>
+    <div class="field">
+      <input type="email" />
+    </div>
+    <div class="field">
+      <input type="password" />
+    </div>
+    <div class="field">
+      <input type="text" />
+    </div>
+
+    <p class="long-paragraph" style="line-height: 1 !important; letter-spacing: 0 !important;">
+      By placing this order you agree to our terms of service and privacy policy, which describe how we collect, use, and share
+      your personal and payment information with our third-party processors, shipping partners, marketing platforms, and
+      analytics providers in order to complete, fulfill, and support your purchase from start to finish without interruption.
+    </p>
+
+    <button type="submit" class="cta-checkout">Place Order</button>
+  </form>
+
+  <h3 class="section-title">Product demo</h3>
+  <video autoplay muted loop width="320" height="180">
+    <source src="demo-video.mp4" type="video/mp4" />
+  </video>
+
+  <footer>
+    <p>&copy; 2026 Shop Demo. <a href="#">Sign-up</a> for more deals.</p>
+  </footer>
+</body>
+</html>

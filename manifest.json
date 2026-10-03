@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Accessibility Intelligence for Product Teams",
+  "version": "0.1.0",
+  "description": "Scans the current page, scores Design and Code accessibility, and tells designers, PMs, and CEOs who is affected and how to fix it. Runs entirely locally.",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Scan this page for accessibility issues",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["widget.css"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
