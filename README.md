@@ -1,10 +1,21 @@
-# Accessibility Intelligence for Product Teams
+# Chameleon (formerly "Accessibility Intelligence for Product Teams")
 
 A Chrome extension (Manifest V3) that scans the current page, scores it, and tells
-designers, PMs, and CEOs who is affected and how to fix it. Built for the people who
-build products, not for end users of the sites it scans.
+designers, PMs, and CEOs who is affected and how to fix it. It is a **triage aid, not
+a certification** — automated checks catch only part of real barriers. Built for the
+people who build products, not for end users of the sites it scans.
 
 Everything runs locally in your browser. No backend, no network calls, no remote code.
+Uses [axe-core](https://github.com/dequelabs/axe-core) (MPL-2.0) as the detection
+engine, bundled locally at `lib/axe.min.js`.
+
+> **Mid-rebrand note:** the UI, manifest, and panel now say "Chameleon," but the
+> project folder/file names still use the original `a11y-intel-extension` /
+> `a11y-*` prefixes — a full file/folder rename was out of scope for the time
+> available. The launcher and panel-header logo are a temporary placeholder SVG
+> (see the comment above `LOGO_SVG` in `content.js`) standing in for
+> `assets/chameleon-logo-source.jpeg`, which hasn't been provided yet. See
+> `DEMO.md` for a live-demo script and recovery plan.
 
 ## Folder structure
 
@@ -65,11 +76,14 @@ a11y-intel-extension/
 
 ## Scoring, in one sentence
 
-`weight = severity × reach × occurrence × critical-path multiplier`, summed separately
-for Design-rules and Code-rules, then `score = 100 − 0.5 × total weight` — see the
-in-app "How is this calculated?" section for the exact breakdown. This is tuned so a
-single broken checkout/sign-up/login button clearly outweighs a pile of minor issues
-elsewhere on the page (`scoring.js`).
+Each score starts at 100. `penalty per rule = weight × min(instances on page, 3)`,
+where weight is Critical=10 / Serious=5 / Moderate=2 / Moderate-minor=1; Design-rule
+and Code-rule penalties are summed separately and subtracted from 100, floored at 0 —
+see the in-app "How is this calculated?" section or `scoring.js`. Critical-path
+detection (checkout/sign-up/login) no longer multiplies into the score — it now only
+drives the **Task blockers** summary and the "Blocks task" badge at the top of the
+Issues tab, paired with a **Fix first →** button that steps through issues in
+priority order.
 
 ## Known limitations (by design, for this build)
 

@@ -23,6 +23,7 @@
   let highlightTimer = null;
   let focusFixStyleEl = null;
   let lastToggleFocus = null;
+  let priorityIndex = -1; // "Fix first" stepper position into currentScan.issues (already priority-sorted)
 
   function prefersReducedMotion() {
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -66,12 +67,22 @@
     return node;
   }
 
+  // TEMP PLACEHOLDER — real art ships as assets/chameleon-logo-source.jpeg (not yet
+  // provided). Swap this inline SVG for cropped/exported PNGs per the spec once that
+  // file exists; nothing else about the markup needs to change (same slot, decorative).
+  const LOGO_SVG = (size) =>
+    `<svg width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <rect x="1" y="1" width="22" height="22" rx="7" fill="#f5f0dc" stroke="#2f6b3a" stroke-width="1.5"/>
+      <path d="M6 15c2-5 6-8 11-7" fill="none" stroke="#2f6b3a" stroke-width="1.8" stroke-linecap="round"/>
+      <circle cx="16.5" cy="8" r="1.6" fill="#2f6b3a"/>
+    </svg>`;
+
   function buildDom() {
     toggleBtn = el("button", {
       id: "a11y-toggle",
-      "aria-label": "Open Accessibility Intelligence panel",
+      "aria-label": "Open Chameleon",
       "aria-expanded": "false",
-      text: "A11y",
+      html: LOGO_SVG(32),
       onclick: () => (panelEl.hidden ? openPanel() : closePanel()),
     });
     shadowRoot.appendChild(toggleBtn);
@@ -82,7 +93,7 @@
     panelEl = el("div", {
       id: "a11y-panel",
       role: "dialog",
-      "aria-label": "Accessibility Intelligence for Product Teams",
+      "aria-label": "Chameleon — accessibility triage",
       hidden: "true",
       onkeydown: (e) => {
         if (e.key === "Escape") {
@@ -95,7 +106,10 @@
     const header = el("div", { class: "a11y-header" }, [
       el("div", { class: "a11y-header-row" }, [
         el("div", {}, [
-          el("p", { class: "a11y-title", text: "Accessibility Intelligence" }),
+          el("p", { class: "a11y-title" }, [
+            el("span", { class: "a11y-title-logo", html: LOGO_SVG(22), "aria-hidden": "true" }),
+            el("span", { text: "Chameleon" }),
+          ]),
           el("p", { class: "a11y-page-meta", id: "a11y-page-meta" }),
         ]),
         el("button", { class: "a11y-icon-btn", "aria-label": "Close panel", text: "✕", onclick: closePanel }),
@@ -117,7 +131,7 @@
     const tablist = el(
       "div",
       {
-        class: "a11y-tablist", role: "tablist", "aria-label": "Accessibility Intelligence sections",
+        class: "a11y-tablist", role: "tablist", "aria-label": "Chameleon sections",
         onkeydown: (e) => {
           if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
           e.preventDefault();
@@ -335,6 +349,8 @@
         pageCritical: scored.pageCritical,
         largeDomWarning,
         elementCount,
+        ts: Date.now(),
+        stale: false,
       };
 
       const saveResult = await sendMessage({
@@ -344,6 +360,9 @@
       });
       const historyResult = await sendMessage({ type: "A11Y_GET_SCAN_HISTORY", url: location.href });
       scanHistory = (historyResult && historyResult.scans) || [];
+      const prev = scanHistory.length >= 2 ? scanHistory[scanHistory.length - 2] : null;
+      currentScan.previousDesign = prev ? prev.design : null;
+      currentScan.previousCode = prev ? prev.code : null;
 
       renderIssuesTab();
       renderFixesTab();
@@ -353,8 +372,20 @@
         `Scan complete. Design score ${scored.design}. Code score ${scored.code}. ${allIssues.reduce((a, i) => a + (i.nodeCount || 0), 0)} issue instances found.`
       );
     } catch (err) {
-      showError(err && err.message ? err.message : "Could not complete the scan.");
-      announce("Scan failed.");
+      const message = err && err.message ? err.message : "Could not complete the scan.";
+      // Demo safety (spec 12.5): never replace a working result with a bare error if
+      // we have something to fall back to — show the last good scan, clearly labeled.
+      if (currentScan) {
+        currentScan.stale = true;
+        currentScan.staleError = message;
+        renderIssuesTab();
+        renderFixesTab();
+        if (activeTabId === "executive") renderExecutiveTab();
+        announce(`Re-scan failed. Showing cached result from ${new Date(currentScan.ts).toLocaleTimeString()}.`);
+      } else {
+        showError(message);
+        announce("Scan failed.");
+      }
     } finally {
       rescanBtn.disabled = false;
       rescanBtn.textContent = "Re-scan";
@@ -362,20 +393,50 @@
   }
 
   // ---------- Highlight on click ----------
-  function highlightElement(targetEl) {
+  const HIGHLIGHT_COLOR = { Critical: "#d55e00", Serious: "#e69f00", Moderate: "#0072b2" };
+  const PULSE_STYLE_ID = "chameleon-highlight-pulse-style";
+
+  function ensurePulseStyle() {
+    if (document.getElementById(PULSE_STYLE_ID)) return;
+    const style = document.createElement("style");
+    style.id = PULSE_STYLE_ID;
+    // Slow pulse (never a hard flash — box-shadow never drops to zero), capped at 2
+    // iterations, fully off under prefers-reduced-motion. Spec 11e / 9.
+    style.textContent = `
+      @keyframes chameleon-highlight-pulse {
+        0%, 100% { box-shadow: 0 0 0 2px var(--chameleon-pulse-color, #0072b2); }
+        50% { box-shadow: 0 0 0 7px var(--chameleon-pulse-color, #0072b2); }
+      }
+      .chameleon-highlight {
+        outline: 3px solid var(--chameleon-pulse-color, #0072b2) !important;
+        outline-offset: 2px !important;
+        animation: chameleon-highlight-pulse 1.4s ease-in-out 2;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .chameleon-highlight { animation: none; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function clearHighlight(targetEl) {
+    targetEl.classList.remove("chameleon-highlight");
+    targetEl.style.removeProperty("--chameleon-pulse-color");
+    targetEl.style.outline = "";
+    targetEl.style.outlineOffset = "";
+  }
+
+  function highlightElement(targetEl, severityLabel) {
     if (!targetEl) return;
-    if (highlightedEl) {
-      highlightedEl.style.outline = "";
-      highlightedEl.style.outlineOffset = "";
-    }
+    ensurePulseStyle();
+    if (highlightedEl) clearHighlight(highlightedEl);
     clearTimeout(highlightTimer);
     targetEl.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "center" });
-    targetEl.style.outline = "3px solid #ff5f3a";
-    targetEl.style.outlineOffset = "2px";
+    targetEl.style.setProperty("--chameleon-pulse-color", HIGHLIGHT_COLOR[severityLabel] || "#0072b2");
+    targetEl.classList.add("chameleon-highlight");
     highlightedEl = targetEl;
     highlightTimer = setTimeout(() => {
-      targetEl.style.outline = "";
-      targetEl.style.outlineOffset = "";
+      clearHighlight(targetEl);
       highlightedEl = null;
     }, 3000);
   }
@@ -395,9 +456,94 @@
     return Array.from(groups.entries()).filter(([, list]) => list.length);
   }
 
+  const VERDICT_ICON = { good: "✓", ok: "●", warn: "▲", bad: "⛔" };
+
+  function renderScoreCard(label, score, previousScore) {
+    const verdict = scoring.verdictFor(score);
+    const delta = scoring.scoreDelta(score, previousScore);
+    return el("div", { class: `a11y-score-card verdict-${verdict.tone}` }, [
+      el("div", { class: "a11y-score-num", text: String(score) }),
+      el("div", { class: "a11y-score-label", text: label }),
+      el("div", { class: "a11y-verdict", text: `${VERDICT_ICON[verdict.tone]} ${verdict.label}` }),
+      delta ? el("div", { class: "a11y-delta", text: delta }) : null,
+    ]);
+  }
+
+  // Distinct task names blocked this scan, each paired with its single
+  // highest-priority blocking issue (currentScan.issues is already sorted by
+  // penalty desc, so first match per task name wins). Spec 11d / 12.3.
+  function getTaskBlockers(issues) {
+    const seen = new Map();
+    issues.forEach((issue) => {
+      if (!issue.taskLabel) return;
+      if (!seen.has(issue.taskLabel)) seen.set(issue.taskLabel, issue);
+    });
+    return Array.from(seen.entries()).map(([taskLabel, issue]) => ({ taskLabel, issue }));
+  }
+
+  function goToPriorityIssue(index) {
+    const issues = (currentScan.issues || []).filter((i) => i.nodeCount > 0);
+    if (!issues.length) return;
+    priorityIndex = Math.min(Math.max(index, 0), issues.length - 1);
+    const issue = issues[priorityIndex];
+    highlightElement(issue.targets[0], issue.severityLabel);
+    switchTab("fixes");
+    scrollToFix(issue.id);
+    announce(`Issue ${priorityIndex + 1} of ${issues.length}: ${issue.help}`);
+    renderIssuesTab();
+  }
+
+  function renderTaskBlockers() {
+    const issues = (currentScan.issues || []).filter((i) => i.nodeCount > 0);
+    const blockers = getTaskBlockers(issues);
+    const box = el("div", { class: "a11y-blockers" });
+
+    if (blockers.length) {
+      box.appendChild(el("div", { class: "a11y-group-heading", text: `Task blockers (${blockers.length})` }));
+      blockers.forEach(({ taskLabel, issue }) => {
+        box.appendChild(
+          el("div", { class: "a11y-blocker-row" }, [
+            el("span", { class: "a11y-badge blocks", text: taskLabel }),
+            el("button", {
+              class: "a11y-blocker-link",
+              text: issue.help,
+              onclick: () => highlightElement(issue.targets[0], issue.severityLabel),
+            }),
+          ])
+        );
+      });
+    }
+
+    const stepperRow = el("div", { class: "a11y-actions", style: "margin-top:8px;" }, [
+      el("button", {
+        class: "a11y-btn",
+        text: "◀ Previous",
+        disabled: priorityIndex <= 0 ? "true" : null,
+        onclick: () => goToPriorityIssue(priorityIndex - 1),
+      }),
+      el("button", {
+        class: "a11y-btn primary",
+        text: priorityIndex === -1 ? "Fix first →" : `Issue ${priorityIndex + 1} of ${issues.length} — Next →`,
+        disabled: !issues.length ? "true" : null,
+        onclick: () => goToPriorityIssue(priorityIndex === -1 ? 0 : priorityIndex + 1),
+      }),
+    ]);
+    box.appendChild(stepperRow);
+    return box;
+  }
+
   function renderIssuesTab() {
     const panel = panelFor("issues");
     panel.innerHTML = "";
+
+    if (currentScan.stale) {
+      panel.appendChild(
+        el("div", {
+          class: "a11y-error-banner",
+          text: `Cached result from ${new Date(currentScan.ts).toLocaleTimeString()} — the last re-scan failed (${currentScan.staleError}). Numbers below are not from the current page state.`,
+        })
+      );
+    }
 
     if (currentScan.largeDomWarning) {
       panel.appendChild(
@@ -409,22 +555,18 @@
     }
 
     const scores = el("div", { class: "a11y-scores" }, [
-      el("div", { class: "a11y-score-card" }, [
-        el("div", { class: "a11y-score-num", text: String(currentScan.design) }),
-        el("div", { class: "a11y-score-label", text: "Automated design score" }),
-      ]),
-      el("div", { class: "a11y-score-card" }, [
-        el("div", { class: "a11y-score-num", text: String(currentScan.code) }),
-        el("div", { class: "a11y-score-label", text: "Automated code score" }),
-      ]),
+      renderScoreCard("Automated design score", currentScan.design, currentScan.previousDesign),
+      renderScoreCard("Automated code score", currentScan.code, currentScan.previousCode),
     ]);
     panel.appendChild(scores);
     panel.appendChild(
       el("p", {
         class: "a11y-disclaimer",
-        text: "Automated checks catch only a portion of real barriers. This is a starting point, not a certification.",
+        text: "Chameleon is a triage aid, not a certification. Automated checks catch only part of real barriers.",
       })
     );
+
+    panel.appendChild(renderTaskBlockers());
 
     const details = el("details", { class: "a11y-formula" });
     details.appendChild(el("summary", { text: "How is this calculated?" }));
@@ -468,18 +610,21 @@
     }
   }
 
+  const SEVERITY_ICON = { Critical: "⛔", Serious: "▲", Moderate: "●" };
+
   function renderIssueCard(issue) {
-    const card = el("div", { class: `a11y-issue-card impact-${issue.impact}` });
+    const card = el("div", { class: `a11y-issue-card impact-${issue.severityLabel.toLowerCase()}` });
     const flagBtn = el("button", {
       class: "a11y-issue-flag",
       text: issue.help,
-      onclick: () => highlightElement(issue.targets[0]),
+      onclick: () => highlightElement(issue.targets[0], issue.severityLabel),
     });
     card.appendChild(flagBtn);
     card.appendChild(el("p", { class: "a11y-issue-affected", text: issue.affected }));
 
     const meta = el("div", { class: "a11y-issue-meta" }, [
-      el("span", { class: "a11y-badge", text: issue.impact }),
+      el("span", { class: "a11y-badge", text: `${SEVERITY_ICON[issue.severityLabel]} ${issue.severityLabel}` }),
+      issue.isMinor ? el("span", { class: "a11y-badge", text: "minor" }) : null,
       el("span", { class: "a11y-badge", text: `${issue.nodeCount} on page` }),
     ]);
     if (issue.taskLabel) {
@@ -490,7 +635,7 @@
     card.appendChild(meta);
 
     const actions = el("div", { class: "a11y-card-actions" }, [
-      el("button", { text: "Highlight on page", onclick: () => highlightElement(issue.targets[0]) }),
+      el("button", { text: "Highlight on page", onclick: () => highlightElement(issue.targets[0], issue.severityLabel) }),
       el("button", { text: "See suggested fix →", onclick: () => { switchTab("fixes"); scrollToFix(issue.id); } }),
     ]);
     card.appendChild(actions);
@@ -700,7 +845,7 @@
       announce("Preview undone.");
     });
     card.appendChild(el("div", { class: "a11y-card-actions" }, [
-      el("button", { text: "Highlight on page", onclick: () => highlightElement(fd.element) }),
+      el("button", { text: "Highlight on page", onclick: () => highlightElement(fd.element, fd.issue && fd.issue.severityLabel) }),
       applyBtn,
       undoBtn,
     ]));
@@ -739,8 +884,8 @@
 
     panel.appendChild(
       el("div", { class: "a11y-scores" }, [
-        el("div", { class: "a11y-score-card" }, [el("div", { class: "a11y-score-num", text: String(currentScan.design) }), el("div", { class: "a11y-score-label", text: "Design" })]),
-        el("div", { class: "a11y-score-card" }, [el("div", { class: "a11y-score-num", text: String(currentScan.code) }), el("div", { class: "a11y-score-label", text: "Code" })]),
+        renderScoreCard("Design", currentScan.design, currentScan.previousDesign),
+        renderScoreCard("Code", currentScan.code, currentScan.previousCode),
       ])
     );
 

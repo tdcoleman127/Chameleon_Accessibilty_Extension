@@ -1,14 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "Accessibility Intelligence for Product Teams",
-  "version": "0.1.0",
-  "description": "Scans the current page, scores Design and Code accessibility, and tells designers, PMs, and CEOs who is affected and how to fix it. Runs entirely locally.",
+  "name": "Chameleon — Accessibility Triage",
+  "version": "0.2.0",
+  "description": "Chameleon scans the current page locally, triages what blocks the most people first, and tells designers, PMs, and CEOs how to fix it. Not a certification. Runs entirely locally.",
   "permissions": ["activeTab", "scripting", "storage"],
   "background": {
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "Scan this page for accessibility issues",
+    "default_title": "Open Chameleon — triage this page's accessibility",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",

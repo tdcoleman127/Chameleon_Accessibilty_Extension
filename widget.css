@@ -11,16 +11,21 @@
   z-index: 2147483000;
   width: 56px;
   height: 56px;
-  border-radius: 999px;
-  background: #1457c9;
-  color: #ffffff;
-  border: none;
-  font: 600 13px/1 -apple-system, "Segoe UI", Arial, sans-serif;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1.5px solid rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
 }
+#a11y-toggle svg { width: 100%; height: 100%; }
 
-#a11y-toggle:hover { background: #0f46a3; }
+#a11y-toggle:hover { background: #f5f5f5; }
 #a11y-toggle:focus-visible,
 button:focus-visible,
 a:focus-visible,
@@ -63,7 +68,9 @@ a:focus-visible,
   gap: 8px;
 }
 
-.a11y-title { font-weight: 700; font-size: 14px; margin: 0; }
+.a11y-title { font-weight: 700; font-size: 14px; margin: 0; display: flex; align-items: center; gap: 6px; }
+.a11y-title-logo { display: inline-flex; width: 20px; height: 20px; flex-shrink: 0; }
+.a11y-title-logo svg { width: 100%; height: 100%; }
 .a11y-page-meta { font-size: 11px; color: #5b6572; margin-top: 2px; word-break: break-all; }
 
 .a11y-icon-btn {
@@ -116,6 +123,12 @@ a:focus-visible,
 .a11y-score-card { flex: 1; background: #f6f8fa; border-radius: 10px; padding: 10px; text-align: center; }
 .a11y-score-num { font-size: 26px; font-weight: 800; line-height: 1; }
 .a11y-score-label { font-size: 10.5px; color: #5b6572; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.02em; }
+.a11y-verdict { font-size: 11px; font-weight: 700; margin-top: 6px; }
+.a11y-delta { font-size: 10.5px; color: #5b6572; margin-top: 2px; }
+.verdict-good .a11y-verdict { color: #0072b2; }
+.verdict-ok .a11y-verdict { color: #946a00; }
+.verdict-warn .a11y-verdict { color: #b5530d; }
+.verdict-bad .a11y-verdict { color: #d55e00; }
 .a11y-disclaimer { font-size: 11px; color: #5b6572; margin: 8px 0 10px; }
 
 details.a11y-formula { font-size: 11.5px; color: #333; margin-bottom: 10px; }
@@ -129,6 +142,11 @@ details.a11y-formula summary { cursor: pointer; color: #1457c9; font-weight: 600
 
 .a11y-group-heading { font-size: 11.5px; font-weight: 700; color: #5b6572; text-transform: uppercase; margin: 14px 0 6px; }
 
+.a11y-blockers { background: #f6f8fa; border-radius: 10px; padding: 10px 11px; margin: 10px 0; }
+.a11y-blocker-row { display: flex; align-items: center; gap: 8px; margin: 5px 0; flex-wrap: wrap; }
+.a11y-blocker-link { background: none; border: none; padding: 0; font-size: 12px; color: #1457c9; text-align: left; cursor: pointer; text-decoration: underline; }
+.a11y-blocker-link:hover { color: #0f46a3; }
+
 .a11y-issue-card {
   border: 1px solid #e3e6ea;
   border-left: 5px solid #8a8f98;
@@ -137,10 +155,11 @@ details.a11y-formula summary { cursor: pointer; color: #1457c9; font-weight: 600
   margin-bottom: 8px;
   background: #fff;
 }
-.a11y-issue-card.impact-critical { border-left-color: #8f1d16; }
-.a11y-issue-card.impact-serious { border-left-color: #a34d00; }
-.a11y-issue-card.impact-moderate { border-left-color: #8a6d00; }
-.a11y-issue-card.impact-minor { border-left-color: #5b6572; }
+/* Color-blind-safe default palette (vermilion/amber/blue) per spec 0.2 + section 2.
+   Three visible severity levels only — "minor" is a tag on Moderate, not a 4th color. */
+.a11y-issue-card.impact-critical { border-left-color: #d55e00; }
+.a11y-issue-card.impact-serious { border-left-color: #e69f00; }
+.a11y-issue-card.impact-moderate { border-left-color: #0072b2; }
 
 .a11y-issue-flag { font-weight: 600; font-size: 13px; margin: 0 0 4px; cursor: pointer; background: none; border: none; text-align: left; padding: 0; color: #1b1f23; }
 .a11y-issue-flag:hover { text-decoration: underline; }
