@@ -1,0 +1,1143 @@
+%PDF-1.3
+%ºß¬à
+3 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 7654
+>>
+stream
+0.200025 w
+0 G
+BT
+/F2 26 Tf
+29.8999999999999986 TL
+0 g
+48. 793.8899999999999864 Td
+(Chameleon) Tj
+ET
+BT
+/F1 13 Tf
+14.9499999999999993 TL
+0.353 g
+48. 763.8899999999999864 Td
+(Development changelog — major changes across all build checkpoints) Tj
+ET
+BT
+/F1 13 Tf
+14.9499999999999993 TL
+0.353 g
+48. 743.8899999999999864 Td
+(Code Your Dreams Hackathon 2026  ·  Generated 10/4/2026, 1:05:45 AM) Tj
+ET
+0.86 G
+48. 715.8899999999999864 m
+547.2799999999999727 715.8899999999999864 l
+S
+BT
+/F1 10 Tf
+11.5 TL
+0. g
+48. 701.8899999999999864 Td
+(This document summarizes every major change made to the Chameleon Chrome extension across its full build) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0. g
+48. 688.8899999999999864 Td
+(history: the original scaffold, the Chameleon rebrand, and all six development checkpoints. Each checkpoint was) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0. g
+48. 675.8899999999999864 Td
+(verified live in a real browser \(Edge + Playwright\) before being marked complete, not just written and assumed to) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0. g
+48. 662.8899999999999864 Td
+(work.) Tj
+ET
+BT
+/F2 20 Tf
+23. TL
+0. g
+48. 643.8899999999999864 Td
+(Phase 0 — Original build) Tj
+ET
+BT
+/F2 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 617.8899999999999864 Td
+("Accessibility Intelligence for Product Teams") Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 604.8899999999999864 Td
+(•  Manifest V3 extension: activeTab/scripting/storage permissions only, no broad host permissions.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 592.3899999999999864 Td
+(•  axe-core bundled locally, injected on demand via chrome.scripting — never loaded on every page.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 579.8899999999999864 Td
+(•  Shadow DOM floating widget + panel, fully isolated from host page styles in both directions.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 567.3899999999999864 Td
+(•  Issues tab: axe + custom checks, weighted severity x reach x occurrence x critical-path scoring, POUR/component) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 554.8899999999999864 Td
+(   grouping, click-to-highlight.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 542.3899999999999864 Td
+(•  Fixes tab: deterministic \(non-LLM\) color-contrast math, target-size/label/name/alt-text generators, live preview +) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 529.8899999999999864 Td
+(   undo, Copy patch.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 517.3899999999999864 Td
+(•  Executive tab: trend sparkline, top risks, legal-exposure note, downloadable HTML report.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 504.8899999999999864 Td
+(•  Roadmap tab \(display-only\), demo.html broken-checkout test page, README.) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 492.3899999999999864 Td
+(Two real bugs found during live verification and fixed in the shipped source: widget.css missing from web_accessible_resources) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 480.8899999999999864 Td
+(\(widget rendered unstyled\), and a double ":1:1" bug in the contrast-ratio message text.) Tj
+ET
+BT
+/F2 20 Tf
+23. TL
+0. g
+48. 463.3899999999999864 Td
+(Phase 0.5 — Rebrand + demo-readiness pass) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 437.3899999999999864 Td
+(•  Renamed Accessibility Intelligence -> Chameleon across manifest, panel UI, README.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 424.8899999999999864 Td
+(•  New severity/score formula: Critical=10 / Serious=5 / Moderate=2 / Moderate\(minor\)=1 weights, penalty = weight x) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 412.3899999999999864 Td
+(   min\(instances,3\), 0-100 clamped score, 4 verdict bands, before/after delta.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 399.8899999999999864 Td
+(•  Color-blind-safe severity palette \(vermilion/amber/blue\) replacing the original red/orange/gold scheme.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 387.3899999999999864 Td
+(•  Task blockers summary + "Fix first" priority stepper added to the Issues tab.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 374.8899999999999864 Td
+(•  Severity-colored, non-flashing pulse highlight for "Highlight on page," replacing the fixed-orange outline.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 362.3899999999999864 Td
+(•  Demo safety: a failed re-scan now falls back to the last good scan, labeled "Cached result from [time]" instead of a) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 349.8899999999999864 Td
+(   bare error.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 337.3899999999999864 Td
+(•  DEMO.md added: timed 2-minute script + live recovery plan.) Tj
+ET
+BT
+/F2 20 Tf
+23. TL
+0. g
+48. 318.8899999999999864 Td
+(Checkpoint 1 — Page style manager + Dyslexia mode) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 292.8899999999999864 Td
+(•  New style-manager.js: the single module spec-required for every page-altering feature, owning one <style) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 280.3899999999999864 Td
+(   id="chameleon-page-style"> element with 6 defined precedence levels, idempotent rebuild, and withSuspended\(\) so) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 267.8899999999999864 Td
+(   scores always describe the real page.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 255.3899999999999864 Td
+(•  Dyslexia-friendly font mode wired as the first real consumer: header toggle, persisted via chrome.storage.local.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 242.8899999999999864 Td
+(•  "Reset page" button added to the header.) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 226.3899999999999864 Td
+(Verified: Live run confirmed: toggling Dyslexia changed body font-family with exactly one managed <style> tag; the panel itself stayed) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 214.8899999999999864 Td
+(completely unaffected \(screenshot showed page in Comic Sans, panel in its own font\) because the host lives outside <body>; Reset) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 203.3899999999999864 Td
+(page fully reverted everything.) Tj
+ET
+BT
+/F2 20 Tf
+23. TL
+0. g
+48. 183.8899999999999864 Td
+(Checkpoint 2 — Color Lab tab) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 157.8899999999999864 Td
+(•  New Color Lab tab: text/background color pickers + synced hex inputs, sliders \(font size, line height, letter/word) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 145.3899999999999864 Td
+(   spacing\), live preview, live WCAG contrast ratio with AA/AAA pass-fail \(normal + large text\).) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 132.8899999999999864 Td
+(•  "Suggest accessible colors" reusing the same deterministic contrast math as the Fixes tab.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 120.3899999999999864 Td
+(•  Color-blind simulation \(Protanopia/Deuteranopia/Tritanopia/Achromatopsia\) via SVG filter, applied page-wide as an) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 107.8899999999999864 Td
+(   explicitly-labeled preview, never a fix.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 95.3899999999999864 Td
+(•  Low-vision tools: Magnify \(100-400% with horizontal-overflow detection\), cursor-size boost, high-contrast mode) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 82.8899999999999864 Td
+(   \(B/W, yellow/black, invert\), focus booster.) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 66.3899999999999864 Td
+(Verified: Live-measured: default contrast 16.58:1 \(all pass\) -> changed to #aaaaaa updated live to 2.32:1 \(all fail\); Apply to page set) Tj
+ET
+endstream
+endobj
+5 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 6 0 R
+>>
+endobj
+6 0 obj
+<<
+/Length 9041
+>>
+stream
+0.200025 w
+0.86 G
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 793.8899999999999864 Td
+(real computed body color; color-blind filter confirmed applied to the page while the panel itself stayed fully colorful \(Shadow DOM) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 782.3899999999999864 Td
+(exclusion held under a page-wide CSS filter, not just plain styles\); Magnify 200% -> computed zoom:2; full Reset page reverted) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 770.8899999999999864 Td
+(color/filter/zoom together.) Tj
+ET
+BT
+/F2 20 Tf
+23. TL
+0. g
+48. 751.3899999999999864 Td
+(Checkpoint 3 — Confidence labels + Needs-manual-review + Issue states) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 725.3899999999999864 Td
+(•  Confidence labels: every issue now Confirmed or Possible. Four new heuristic checks \(vague link text, sound-only) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 712.8899999999999864 Td
+(   language, reading level, key-flow detection\) run as Possible findings — softer wording, capped severity, never) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 700.3899999999999864 Td
+(   scored, Confirm/Dismiss actions.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 687.8899999999999864 Td
+(•  Needs-manual-review merges axe's own "incomplete" results with the static review list, adds a count badge and) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 675.3899999999999864 Td
+(   per-item "Mark reviewed.") Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 662.8899999999999864 Td
+(•  Issue states: Open/Ignored/Fixed/Regressed, persisted per rule per URL in chrome.storage.local. Auto-detects) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 650.3899999999999864 Td
+(   "Fixed since last scan" by diffing issue IDs across scans; a re-appearing "fixed" issue flips back to Open with a) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 637.8899999999999864 Td
+(   Regressed badge.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 625.3899999999999864 Td
+(•  Filter chips: All / Critical / Serious / Moderate / Needs review / Ignored / Fixed, each with a live count.) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 608.8899999999999864 Td
+(Verified: A real bug was caught and fixed mid-checkpoint: the first implementation re-ran a full axe scan after "Mark fixed," which) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 597.3899999999999864 Td
+(immediately re-detected the still-present issue and falsely flipped it to Regressed. Fixed by making Ignore/Fixed/Confirm/Dismiss) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 585.8899999999999864 Td
+(local, instant state mutations instead of real re-scans. Verified live: chip counts summed correctly, Mark fixed moved an issue instantly) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 574.3899999999999864 Td
+(with zero false regressions, Fixed-filter view rendered the correct entry with a working Reopen button.) Tj
+ET
+BT
+/F2 20 Tf
+23. TL
+0. g
+48. 554.8899999999999864 Td
+(Checkpoint 4 — Read Aloud + Sound alternatives + Screen Reader tab) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 528.8899999999999864 Td
+(•  New "What a screen reader hears" tab: independent reading-order walker listing role + accessible name for every) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 516.3899999999999864 Td
+(   heading/landmark/link/button/field, with inline problem flags, explicitly labeled an approximation.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 503.8899999999999864 Td
+(•  Sound alternatives header toggle: badges every <video>/<audio> with caption/transcript status \(extended) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 491.3899999999999864 Td
+(   style-manager.js with a non-CSS apply/remove pair, still owned by that one module\); Chameleon's own) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 478.8899999999999864 Td
+(   announcements also surface as a visible on-page toast when this mode is on.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 466.3899999999999864 Td
+(•  Read Aloud header toggle using speechSynthesis, restricted to localService voices only \(stays off with a plain) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 453.8899999999999864 Td
+(   message if none exist, so nothing is ever sent to a remote voice\). Play/Pause/Resume/Stop, speed, voice selection,) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 441.3899999999999864 Td
+(   per-card "Read this issue," on-demand page-content reading, current-item highlighting.) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 424.8899999999999864 Td
+(Verified: Live run found 3 real local Windows voices \(Microsoft David/Mark/Zira\); confirmed speechSynthesis.speaking:true after) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 413.3899999999999864 Td
+(toggling on; confirmed the visible toast updates correctly even on an async-triggered announce \(storage round-trip -> announce\), not) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 401.8899999999999864 Td
+(just the synchronous case; Screen Reader tab detected 23 landmarks/controls with 8 correctly flagged as missing a name.) Tj
+ET
+BT
+/F2 20 Tf
+23. TL
+0. g
+48. 382.3899999999999864 Td
+(Checkpoint 5 — Exports \(PDF / JSON / CSV / SARIF\) + Copy for developer) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 356.3899999999999864 Td
+(•  PDF report: vendored jsPDF locally \(same local-injection pattern as axe-core\), multi-page report covering) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 343.8899999999999864 Td
+(   scores+formula, severity counts, every confirmed issue with its fix, Possible findings, Needs-manual-review,) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 331.3899999999999864 Td
+(   Ignored/Fixed, a screen-reader summary, and the Roadmap. Filename follows) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 318.8899999999999864 Td
+(   chameleon-report-YYYY-MM-DD-pagename.pdf.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 306.3899999999999864 Td
+(•  JSON export with a stable schema \(rule id, severity, selector, WCAG criterion, confidence, state, fix words/diff\).) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 293.8899999999999864 Td
+(•  SARIF 2.1.0 export \(Critical/Serious -> error, Moderate -> warning\) for GitHub code scanning.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 281.3899999999999864 Td
+(•  CSV export, Copy-summary-to-clipboard, and a per-card "Copy for developer" ticket button.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 268.8899999999999864 Td
+(•  FUTURE.md added: planned CLI + GitHub Action note, explicitly labeled not-built.) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 252.3899999999999864 Td
+(Verified: Downloaded files were actually read back and validated, not just confirmed to exist: JSON had 11 confirmed issues at) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 240.8899999999999864 Td
+(schemaVersion 1.0; CSV had 12 lines with the correct header; SARIF reported version 2.1.0 with 11 results; the downloaded PDF's) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 229.3899999999999864 Td
+(bytes genuinely started with %PDF- at 18KB. Clipboard content for both Copy actions was read back and matched expectations.) Tj
+ET
+BT
+/F2 20 Tf
+23. TL
+0. g
+48. 209.8899999999999864 Td
+(Checkpoint 6 — Tab bar, launcher pulse, Position/themes, tour, keyboard audit, docs) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 183.8899999999999864 Td
+(•  Fixed the clipped tab bar \(flagged in Checkpoint 4\): switched from forced-fit flex:1 tabs to natural sizing + horizontal) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 171.3899999999999864 Td
+(   scroll.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 158.8899999999999864 Td
+(•  Launcher pulse badge: soft ring pulse \(logo color never changes\) on new Critical issues, max 3 pulses,) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 146.3899999999999864 Td
+(   prefers-reduced-motion safe, settles to a static count badge.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 133.8899999999999864 Td
+(•  Position menu: dock Left/Right/Bottom/Floating, persisted per site; arrow-key nudge \(Shift = bigger step\) as the) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 121.3899999999999864 Td
+(   keyboard-operable alternative to dragging. Real mouse drag/resize/minimize explicitly not built.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 108.8899999999999864 Td
+(•  Keyboard tab-order audit overlay \(numbered badges in real tab order\).) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 96.3899999999999864 Td
+(•  Light/dark/high-contrast panel chrome themes via CSS custom properties, persisted; logo keeps a readable backing) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 83.8899999999999864 Td
+(   in all three.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 71.3899999999999864 Td
+(•  First-run 3-step tour; generic POUR-keyed "Learn more" example per issue card.) Tj
+ET
+endstream
+endobj
+7 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 8 0 R
+>>
+endobj
+8 0 obj
+<<
+/Length 4012
+>>
+stream
+0.200025 w
+0.86 G
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 793.8899999999999864 Td
+(•  Self-check dev script \(scripts/self-check.js\) running axe-core against the panel itself.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 781.3899999999999864 Td
+(•  ARCHITECTURE.md, PITCH.md, ACCESSIBILITY-TESTING.md added.) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 764.8899999999999864 Td
+(Verified: Launcher badge showed the exact live Critical count \(4\) with a matching aria-label. Docking Right set class=dock-right; two) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 753.3899999999999864 Td
+(ArrowLeft presses while floating moved the panel from left:844.8 to 804.8 -- exactly -40px \(2 x 20px step\). Dark theme set) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 741.8899999999999864 Td
+(data-theme=dark with computed panel background rgb\(27,31,35\), the exact defined value. The self-check script was actually) Tj
+ET
+BT
+/F3 8.5 Tf
+9.7749999999999986 TL
+0.392 g
+48. 730.3899999999999864 Td
+(executed against the real build: 0 total violations, 0 Critical/Serious, on Chameleon's own panel.) Tj
+ET
+BT
+/F2 20 Tf
+23. TL
+0. g
+48. 710.8899999999999864 Td
+(Logo integration) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 684.8899999999999864 Td
+(•  Real logo art \(cham-logo-demo.png, 2000x2000\) processed into assets/icons/ at 16/32/48/64/96/128px via) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 672.3899999999999864 Td
+(   high-quality bicubic downscaling.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 659.8899999999999864 Td
+(•  Replaced the placeholder inline SVG in the launcher and panel-header title with the real logo image, served from) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 647.3899999999999864 Td
+(   the extension bundle \(chrome.runtime.getURL\), declared in web_accessible_resources.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 634.8899999999999864 Td
+(•  manifest.json icons/action.default_icon updated to the new assets/icons/ paths; old placeholder icon generator and) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 622.3899999999999864 Td
+(   output removed.) Tj
+ET
+BT
+/F2 20 Tf
+23. TL
+0. g
+48. 599.8899999999999864 Td
+(Known limitations \(explicitly deferred, not forgotten\)) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 573.8899999999999864 Td
+(•  Real mouse-drag-to-reposition, drag-to-resize, and minimize/collapse for the panel — keyboard-operable Position) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 561.3899999999999864 Td
+(   menu + arrow-key nudge were built instead.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 548.8899999999999864 Td
+(•  Full rules-catalog.json / user-groups.json consolidation — lookup.js already functionally serves this role; merging it) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 536.3899999999999864 Td
+(   with scoring.js/fixes.js into one new file was judged a high-risk, low-user-value refactor this late in the build.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 523.8899999999999864 Td
+(•  Per-rule "Learn more" examples — shipped 4 generic POUR-level examples instead of ~70 rule-specific ones.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 511.3899999999999864 Td
+(•  Visible-focus-indicator automated detection — would require programmatically focusing every interactive element,) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 498.8899999999999864 Td
+(   risking side effects on the host page; left as a manual checklist item in ACCESSIBILITY-TESTING.md instead.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 486.3899999999999864 Td
+(•  Live on-device captions — would require a remote speech-recognition API, breaking the "nothing leaves your) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 473.8899999999999864 Td
+(   browser" guarantee.) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0. g
+48. 461.3899999999999864 Td
+(•  CLI / GitHub Action for CI — planned and sketched in FUTURE.md, not built.) Tj
+ET
+endstream
+endobj
+1 0 obj
+<</Type /Pages
+/Kids [3 0 R 5 0 R 7 0 R ]
+/Count 3
+>>
+endobj
+9 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+10 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+11 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+12 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+13 0 obj
+<<
+/Type /Font
+/BaseFont /Courier
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+14 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+15 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+16 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+17 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Roman
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+18 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+19 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Italic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+20 0 obj
+<<
+/Type /Font
+/BaseFont /Times-BoldItalic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+21 0 obj
+<<
+/Type /Font
+/BaseFont /ZapfDingbats
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+22 0 obj
+<<
+/Type /Font
+/BaseFont /Symbol
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+2 0 obj
+<<
+/ProcSet [/PDF /Text /ImageB /ImageC /ImageI]
+/Font <<
+/F1 9 0 R
+/F2 10 0 R
+/F3 11 0 R
+/F4 12 0 R
+/F5 13 0 R
+/F6 14 0 R
+/F7 15 0 R
+/F8 16 0 R
+/F9 17 0 R
+/F10 18 0 R
+/F11 19 0 R
+/F12 20 0 R
+/F13 21 0 R
+/F14 22 0 R
+>>
+/XObject <<
+>>
+>>
+endobj
+23 0 obj
+<<
+/Producer (jsPDF 4.2.1)
+/CreationDate (D:20261004010545-05'00')
+>>
+endobj
+24 0 obj
+<<
+/Type /Catalog
+/Pages 1 0 R
+/OpenAction [3 0 R /FitH null]
+/PageLayout /OneColumn
+>>
+endobj
+xref
+0 25
+0000000000 65535 f 
+0000021289 00000 n 
+0000023122 00000 n 
+0000000015 00000 n 
+0000000152 00000 n 
+0000007858 00000 n 
+0000007995 00000 n 
+0000017088 00000 n 
+0000017225 00000 n 
+0000021358 00000 n 
+0000021483 00000 n 
+0000021614 00000 n 
+0000021748 00000 n 
+0000021886 00000 n 
+0000022010 00000 n 
+0000022139 00000 n 
+0000022271 00000 n 
+0000022407 00000 n 
+0000022535 00000 n 
+0000022662 00000 n 
+0000022791 00000 n 
+0000022924 00000 n 
+0000023026 00000 n 
+0000023374 00000 n 
+0000023460 00000 n 
+trailer
+<<
+/Size 25
+/Root 24 0 R
+/Info 23 0 R
+/ID [ <97CBECE850CB1FD10A40FCC1CCCF7C84> <97CBECE850CB1FD10A40FCC1CCCF7C84> ]
+>>
+startxref
+23564
+%%EOF

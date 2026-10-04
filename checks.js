@@ -30,6 +30,29 @@
       help,
       description,
       tags: [],
+      confidence: "confirmed", // these are all verified by direct DOM/attribute inspection, not guesses
+      nodeCount: elements.length,
+      targets: elements,
+      nodes: elements.slice(0, 25).map((el) => ({ target: [cssPath(el)], html: el.outerHTML.slice(0, 300) })),
+    };
+  }
+
+  // "Possible" findings (spec 0.4): heuristic guesses, never scored, never shown as
+  // Critical, softer wording, grouped separately with a Confirm/Dismiss action.
+  function makePossibleIssue({ id, pour, component, help, description, elements }) {
+    if (!elements.length) return null;
+    return {
+      id,
+      source: "custom",
+      impact: "moderate", // Possible findings are capped below Critical regardless of apparent severity
+      pour,
+      component,
+      help,
+      description,
+      tags: [],
+      confidence: "possible",
+      severityLabel: "Moderate", // Possible findings are never Critical/Serious regardless of apparent severity
+      isMinor: false,
       nodeCount: elements.length,
       targets: elements,
       nodes: elements.slice(0, 25).map((el) => ({ target: [cssPath(el)], html: el.outerHTML.slice(0, 300) })),
@@ -196,6 +219,87 @@
     return { issues: issues.filter(Boolean), reviewIframes };
   }
 
+  // ---------- "Possible" findings: heuristic guesses, never scored (spec 0.4) ----------
+  const VAGUE_LINK_TEXT = new Set(["click here", "read more", "here", "more", "learn more", "link", "this link", "click", "continue reading"]);
+
+  function checkVagueLinks(doc) {
+    const flagged = [];
+    doc.querySelectorAll("a[href]").forEach((a) => {
+      const text = (a.textContent || "").trim().toLowerCase();
+      if (VAGUE_LINK_TEXT.has(text)) flagged.push(a);
+    });
+    return flagged;
+  }
+
+  const SOUND_ONLY_PATTERN = /\b(listen for|you'?ll hear|a beep|a chime|an audible (tone|cue|alert)|sound when|tone when)\b/i;
+
+  function checkSoundOnlyText(doc) {
+    const flagged = [];
+    doc.querySelectorAll("p, li, span, dd, td").forEach((el) => {
+      if (el.children.length > 2) return;
+      const text = el.textContent || "";
+      if (!text || text.length > 400) return;
+      if (SOUND_ONLY_PATTERN.test(text)) flagged.push(el);
+    });
+    return flagged.slice(0, 10);
+  }
+
+  function checkReadingLevel(doc) {
+    const flagged = [];
+    doc.querySelectorAll("p").forEach((p) => {
+      const text = (p.textContent || "").trim();
+      if (text.length < 80) return;
+      const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0);
+      const words = text.split(/\s+/).filter(Boolean);
+      if (!sentences.length) return;
+      if (words.length / sentences.length > 25) flagged.push(p);
+    });
+    return flagged.slice(0, 10);
+  }
+
+  function runPossibleChecks(doc, pageCritical) {
+    const issues = [];
+    issues.push(
+      makePossibleIssue({
+        id: "possible-vague-link",
+        pour: POUR.U, component: "navigation",
+        help: "This link's text might not say where it goes",
+        description: "Screen reader users often jump between links out of context, and voice-control users need something specific to say — \"click here\" or \"read more\" alone doesn't give them that.",
+        elements: checkVagueLinks(doc),
+      })
+    );
+    issues.push(
+      makePossibleIssue({
+        id: "possible-sound-only",
+        pour: POUR.P, component: "content",
+        help: "This might rely on sound alone to convey information",
+        description: "Deaf and hard-of-hearing users would miss this if the instruction or cue is only ever audible, with no visual equivalent nearby.",
+        elements: checkSoundOnlyText(doc),
+      })
+    );
+    issues.push(
+      makePossibleIssue({
+        id: "possible-reading-level",
+        pour: POUR.U, component: "content",
+        help: "This text might be hard to read for some users",
+        description: "Long, complex sentences can be a barrier for people with cognitive disabilities, dyslexia, or limited English proficiency — worth a plain-language pass.",
+        elements: checkReadingLevel(doc),
+      })
+    );
+    if (pageCritical) {
+      issues.push(
+        makePossibleIssue({
+          id: "possible-key-flow",
+          pour: POUR.O, component: "forms",
+          help: "This page might be part of a checkout, login, search, or sign-up flow",
+          description: "Detected from form fields, button text, or the URL — pages like this tend to carry a higher cost per barrier, since blocking them blocks a whole task.",
+          elements: [doc.body],
+        })
+      );
+    }
+    return issues.filter(Boolean);
+  }
+
   function runHumanReview(doc, reviewIframes) {
     const items = [
       {
@@ -243,5 +347,5 @@
     "custom-reduced-motion",
   ]);
 
-  ns.checks = { runScoredChecks, runHumanReview, EXTRA_CHECK_RULE_IDS };
+  ns.checks = { runScoredChecks, runPossibleChecks, runHumanReview, EXTRA_CHECK_RULE_IDS };
 })();

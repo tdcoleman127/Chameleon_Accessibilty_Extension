@@ -22,6 +22,7 @@ const CONTENT_FILES = [
   "scoring.js",
   "checks.js",
   "fixes.js",
+  "style-manager.js",
   "executive.js",
   "roadmap.js",
   "content.js",
@@ -69,6 +70,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       .then(() => sendResponse({ ok: true }))
       .catch((err) => sendResponse({ ok: false, error: String(err && err.message) }));
     return true; // keep the message channel open for the async response
+  }
+
+  if (message.type === "A11Y_INJECT_JSPDF") {
+    chrome.scripting
+      .executeScript({ target: { tabId: sender.tab.id, allFrames: false }, files: ["lib/jspdf.umd.min.js"] })
+      .then(() => sendResponse({ ok: true }))
+      .catch((err) => sendResponse({ ok: false, error: String(err && err.message) }));
+    return true;
   }
 
   if (message.type === "A11Y_GET_SCAN_HISTORY") {
