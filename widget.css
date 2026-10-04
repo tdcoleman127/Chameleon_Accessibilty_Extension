@@ -127,6 +127,11 @@ a:focus-visible,
   justify-content: space-between;
   gap: 8px;
 }
+/* Real click-and-drag repositioning — grab anywhere on the title bar that isn't
+   a button. touch-action:none stops the browser from treating the drag as a
+   page scroll/pan gesture on touch devices while a pointer is captured here. */
+.a11y-drag-handle { cursor: grab; touch-action: none; user-select: none; }
+.a11y-drag-handle.dragging { cursor: grabbing; }
 
 .a11y-title { font-weight: 700; font-size: 14px; margin: 0; display: flex; align-items: center; gap: 6px; }
 .a11y-title-logo { display: inline-flex; width: 20px; height: 20px; flex-shrink: 0; }

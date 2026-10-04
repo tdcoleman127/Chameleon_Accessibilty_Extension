@@ -69,6 +69,19 @@
     return String(str).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   }
 
+  // Short display label for a URL — just the site name, never the full path/query
+  // string. Mirrors content.js's shortSiteLabel (kept separate: each module here
+  // is self-contained, no cross-file imports).
+  function shortSiteLabel(urlStr) {
+    try {
+      const u = new URL(urlStr);
+      if (u.protocol === "file:") return u.pathname.split("/").filter(Boolean).pop() || "local file";
+      return u.hostname.replace(/^www\./, "");
+    } catch {
+      return urlStr;
+    }
+  }
+
   function buildReportHtml({ url, title, design, code, issues, history, roadmapNote }) {
     const riskItems = topRisks(issues).map((r) => `<li>${escapeHtml(r)}</li>`).join("");
     const blocked = blockedTasks(issues);
@@ -109,7 +122,7 @@
 </head>
 <body>
   <h1>Accessibility report</h1>
-  <p><strong>Page:</strong> ${escapeHtml(title)}<br/><strong>URL:</strong> ${escapeHtml(url)}<br/><strong>Generated:</strong> ${new Date().toLocaleString()}</p>
+  <p><strong>Page:</strong> ${escapeHtml(title)}<br/><strong>Site:</strong> ${escapeHtml(shortSiteLabel(url))}<br/><strong>Generated:</strong> ${new Date().toLocaleString()}</p>
   <div class="scores">
     <div class="score">${design}<small>Automated Design score</small></div>
     <div class="score">${code}<small>Automated Code score</small></div>

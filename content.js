@@ -65,6 +65,7 @@
       shadowRoot.getElementById("a11y-dyslexia-btn").setAttribute("aria-pressed", "true");
     }
     await loadDockPreference();
+    await loadPanelPosition();
     await loadThemePreference();
     maybeShowFirstRunTour();
 
@@ -128,7 +129,7 @@
     });
 
     const header = el("div", { class: "a11y-header" }, [
-      el("div", { class: "a11y-header-row" }, [
+      el("div", { class: "a11y-header-row a11y-drag-handle", id: "a11y-drag-handle" }, [
         el("div", {}, [
           el("p", { class: "a11y-title" }, [
             el("span", { class: "a11y-title-logo", html: LOGO_IMG(22), "aria-hidden": "true" }),
@@ -224,10 +225,26 @@
     renderRoadmapTab();
     renderColorLabTab();
     renderScreenReaderTab();
+    makePanelDraggable();
+  }
+
+  // Short display label for a URL — just the site name (e.g. "walmart.com"), never
+  // the full path/query string. Used anywhere a URL is shown to a human; storage
+  // keys, exports, and SARIF locations still use the real, full location.href.
+  function shortSiteLabel(urlStr) {
+    try {
+      const u = new URL(urlStr);
+      if (u.protocol === "file:") {
+        return u.pathname.split("/").filter(Boolean).pop() || "local file";
+      }
+      return u.hostname.replace(/^www\./, "");
+    } catch {
+      return urlStr;
+    }
   }
 
   function updatePageMeta() {
-    shadowRoot.getElementById("a11y-page-meta").textContent = `${document.title} — ${location.href}`;
+    shadowRoot.getElementById("a11y-page-meta").textContent = `${document.title} — ${shortSiteLabel(location.href)}`;
   }
 
   function panelFor(id) { return shadowRoot.getElementById(`a11y-panel-${id}`); }
@@ -333,15 +350,91 @@
     if (data.chameleonTheme) setTheme(data.chameleonTheme);
   }
 
+  function clampToViewport(left, top, rect) {
+    const maxLeft = window.innerWidth - rect.width - 4;
+    const maxTop = window.innerHeight - rect.height - 4;
+    return [Math.min(Math.max(4, left), maxLeft), Math.min(Math.max(4, top), maxTop)];
+  }
+
   function nudgePanel(dx, dy) {
     const rect = panelEl.getBoundingClientRect();
     if (!panelEl.style.left) { panelEl.style.left = `${rect.left}px`; panelEl.style.top = `${rect.top}px`; panelEl.style.right = "auto"; panelEl.style.bottom = "auto"; }
-    const maxLeft = window.innerWidth - rect.width - 4;
-    const maxTop = window.innerHeight - rect.height - 4;
-    const newLeft = Math.min(Math.max(4, rect.left + dx), maxLeft);
-    const newTop = Math.min(Math.max(4, rect.top + dy), maxTop);
+    const [newLeft, newTop] = clampToViewport(rect.left + dx, rect.top + dy, rect);
     panelEl.style.left = `${newLeft}px`;
     panelEl.style.top = `${newTop}px`;
+    savePanelPosition(newLeft, newTop);
+  }
+
+  function savePanelPosition(left, top) {
+    chrome.storage.local.set({ [`chameleonPanelPos:${location.hostname}`]: { left, top } });
+  }
+
+  async function loadPanelPosition() {
+    const data = await chrome.storage.local.get([`chameleonPanelPos:${location.hostname}`]);
+    const pos = data[`chameleonPanelPos:${location.hostname}`];
+    if (pos && panelDock === "floating") {
+      panelEl.style.left = `${pos.left}px`;
+      panelEl.style.top = `${pos.top}px`;
+      panelEl.style.right = "auto";
+      panelEl.style.bottom = "auto";
+    }
+  }
+
+  // Real click-and-drag repositioning (spec section 9) — grab the title bar
+  // anywhere that isn't a button and drag freely; it's not constrained to the
+  // Position menu's four presets. Uses Pointer Events + setPointerCapture so the
+  // drag keeps tracking even if the cursor leaves the title bar or the window
+  // mid-drag. Dragging always wins over whatever dock was active — grabbing the
+  // title bar undocks the panel into floating mode, same as dragging a maximized
+  // OS window's title bar un-maximizes it. The Position menu + arrow-key nudge
+  // remain as the fully keyboard-operable equivalent; this doesn't replace them.
+  function makePanelDraggable() {
+    const handle = shadowRoot.getElementById("a11y-drag-handle");
+    let dragging = false;
+    let startX = 0, startY = 0, startLeft = 0, startTop = 0;
+
+    handle.addEventListener("pointerdown", (e) => {
+      if (e.target.closest("button, a, input, select, textarea")) return; // let real controls work normally
+      if (e.button !== undefined && e.button !== 0) return; // left-click / primary touch only
+      dragging = true;
+      const rect = panelEl.getBoundingClientRect();
+      startX = e.clientX;
+      startY = e.clientY;
+      startLeft = rect.left;
+      startTop = rect.top;
+      if (panelDock !== "floating") {
+        panelDock = "floating";
+        applyDockClass();
+        chrome.storage.local.set({ [`chameleonDock:${location.hostname}`]: "floating" });
+        shadowRoot.querySelectorAll(".a11y-position-menu button").forEach((b) => b.setAttribute("aria-pressed", String(b.textContent === "Floating")));
+      }
+      panelEl.style.left = `${startLeft}px`;
+      panelEl.style.top = `${startTop}px`;
+      panelEl.style.right = "auto";
+      panelEl.style.bottom = "auto";
+      handle.setPointerCapture(e.pointerId);
+      handle.classList.add("dragging");
+      e.preventDefault();
+    });
+
+    handle.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      const rect = panelEl.getBoundingClientRect();
+      const [newLeft, newTop] = clampToViewport(startLeft + (e.clientX - startX), startTop + (e.clientY - startY), rect);
+      panelEl.style.left = `${newLeft}px`;
+      panelEl.style.top = `${newTop}px`;
+    });
+
+    const endDrag = (e) => {
+      if (!dragging) return;
+      dragging = false;
+      handle.classList.remove("dragging");
+      try { handle.releasePointerCapture(e.pointerId); } catch { /* already released */ }
+      const rect = panelEl.getBoundingClientRect();
+      savePanelPosition(rect.left, rect.top);
+    };
+    handle.addEventListener("pointerup", endDrag);
+    handle.addEventListener("pointercancel", endDrag);
   }
 
   function openPanel() {
@@ -1737,7 +1830,7 @@
     const data = buildExportData();
     const lines = [
       `Chameleon report — ${data.title}`,
-      data.url,
+      shortSiteLabel(data.url),
       `Design score: ${data.scores.design}  |  Code score: ${data.scores.code}`,
       "",
       `Confirmed issues (${data.confirmedIssues.length}):`,
@@ -1796,7 +1889,7 @@
     doc.setFont(undefined, "bold").setFontSize(18).text("Chameleon", margin, y);
     y += 24;
     doc.setFont(undefined, "normal").setFontSize(10);
-    para(`${document.title}  —  ${location.href}`);
+    para(`${document.title}  —  ${shortSiteLabel(location.href)}`);
     para(new Date().toLocaleString());
     para("Triage aid, not a certification. Automated checks catch only part of real barriers.");
     y += 6;
